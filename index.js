@@ -24,15 +24,19 @@ console.log(processFirstItem(['foo','bar'],function(str){return str+str}));
 ///// M V P ///////
 
 /*Task 1: counterMaker()
-  
   Study the code for counter1 and counter2, then answer the questions below.
-  
   1. What is the difference between counter1 and counter2?
-  
+      First one resets the counter every time the function is run,
+      the second one doesn't utilize a nested function (or function within a function,
+      am I phrasing this correctly?)
   2. Which of the two uses a closure? How can you tell?
-  
+      Both. Each has a function containing a variable that hasn't been defined inside the function block,
+      and is pulled from one scope layer above
   3. In what scenario would the counter1 code be preferable? In what scenario would 
      counter2 be better?  
+      When I want something else to occur before count++. (asynchron coding),
+      or when I want to run the code multiple times from 0 i.e. without the result
+      from before being saved. Like an egg timer as opposed to a stop watch
 */
 
 // counter1 code
@@ -42,12 +46,10 @@ function counterMaker() {
    return count++;
   }
 }
-
 const counter1 = counterMaker();
 
 // counter2 code
 let count = 0;
-
 function counter2() {
   return count++;
 }
@@ -56,43 +58,72 @@ function counter2() {
 /* ⚾️⚾️⚾️ Task 2: inning() ⚾️⚾️⚾️
 Use the inning function below to do the following:
   1. Return a random whole number of points between 0 and 2 scored by one team in an inning
-  
+
   For example: invoking inning() should return a numerical score value of 0, 1, or 2
   
 NOTE: This will be a callback function for the tasks below
 */
 
-function inning(/*Code Here*/){
-    /*Code Here*/
-}
+function inning(){
+    let score = Math.round(Math.random()*2)
+    return score
+} // functions are variables too
 
+// or
+// function inning(){
+//   let score = Math.floor(Math.random()*3)
+//   return score
+// }
 
 /* ⚾️⚾️⚾️ Task 3: finalScore() ⚾️⚾️⚾️
 Use the finalScore function below to do the following:
-  1. Receive the callback function `inning` that was created in Task 2 
+  1. Receive the callback function (i.e. a parameter that is a function) 
+  called `inning` that was created in Task 2 
   2. Receive a number of innings to be played
   3. After each inning, update the score of the home and away teams
-  4. After the last inning, return an object containing the final (total) score of the innings played
-  
-  For example: invoking finalScore(inning, 9) might return this object:
-{
-  "Home": 11,
-  "Away": 5
-}
-*/ 
+  4. After the last inning, return an object containing the final (total) 
+     score of the innings played
+     For example: invoking finalScore(inning, 9) might return this object:
+      {
+        "Home": 11,
+        "Away": 5
+      }                                                                   */ 
 
-function finalScore(/*code Here*/){
-  /*Code Here*/
+function finalScore(callback, numInnings) { //callback placeholder, cld be banana
+
+  let home = 0
+  let away = 0
+
+  for (let i = 0; i < numInnings; i++) { //must let, i changes, SEMICOLONS
+    home = home + callback() // placeholder for variable name (in this case inning)
+    away  = away + callback()
+  }
+
+  return { //must be in the same line
+    "Home": home,
+    "Away": away
+  }
 }
+
+console.log(finalScore(inning, 9))
 
 /* ⚾️⚾️⚾️ Task 4: getInningScore() ⚾️⚾️⚾️
 Use the getInningScore() function below to do the following:
   1. Receive a callback function - you will pass in the inning function from task 2 as your argument 
-  2. Return an object with a score for home and a score for away that populates from invoking the inning callback function */
+  2. Return an object with a score for home and a score for away that populates 
+  from invoking the inning callback function */
 
-function getInningScore(/*Your Code Here */) {
-  /*Your Code Here */
+function getInningScore(callback) {
+
+  let home = 0 + callback()
+  let away = 0 + callback()
+
+  return {
+    "Home": home,
+    "Away": away
+  }
 }
+console.log(getInningScore(inning))
 
 
 /* ⚾️⚾️⚾️ Task 5: scoreboard() ⚾️⚾️⚾️
@@ -102,8 +133,11 @@ Use the scoreboard function below to do the following:
   3. Receive a number of innings to be played
   4. Return an array where each of it's index values equals a string stating the
   Home and Away team's scores for each inning.  Not the cummulative score.
-  5. If there's a tie at the end of the innings, add this message containing the score to the end of the array:  "This game will require extra innings: Away 12 - Home 12"  (see tie example below)
-     If there isn't a tie, add this message to the end of the array: "Final Score: Away 13 - Home 11"  (see no tie example below)
+  5. If there's a tie at the end of the innings, add this message containing 
+  the score to the end of the array:  "This game will require extra innings: 
+  Away 12 - Home 12"  (see tie example below)
+     If there isn't a tie, add this message to the end of the array: 
+     "Final Score: Away 13 - Home 11"  (see no tie example below)
   
   NO TIE example: invoking scoreboard(getInningScore,inning, 9) might return 
   an array of strings like this:
@@ -136,10 +170,47 @@ Use the scoreboard function below to do the following:
 ]  
   */
 
-function scoreboard(/* CODE HERE */) {
-  /* CODE HERE */
+function scoreboard(callback, callback2, numOfInnings) {
+  //create array to hold scores for each inning
+  let anArray = [];
+  
+  //create a counter for home score
+  let homeScore = "";
+
+  //create a counter for away score
+  let awayScore = "";
+  //or let homeScore = '', awayScore = '';
+
+  // create a loop that runs from 1 up to the numOfInnings
+  //inside of our loop we want to const result = getInningScore(inning) 
+  //and pass in our inning function to get our score
+  //add the formatted string version of our result from getInningScore
+  //e.g. const formattedString = `Inning ${i}: Away ${results.away} - 
+  //Home $ {result.home}`
+
+  for (let i = 0; i < numOfInnings; i++) { 
+    const result = callback(callback2); //getInningScore(inning);
+    const formattedString = `Inning ${i}: Away ${result.away} - Home ${result.home}`;
+    homeScore =+ result.Home //?
+  }
+
+  //if else here? idk.... need more help/time/instruction
+
+// add that fromattedString to our array
+//add result.away to counter for away score
+// add result.home to counter for home score
+
+//if true check if counter for home score === counter for away score
+  // add the string `This game will require extra innings: 
+  //Away ${currentAwayScore} - Home ${counter for home score}` to array
+  // if false add Final Score: Away ${results.away} - 
+//Home $ {result.home}`
+
+//return array
+  return arr[Home, Away]
 }
 
+scoreboard(getInningScore, inning, 9)
 
 
 
